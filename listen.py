@@ -25,7 +25,7 @@ nomi = {"11":"ingresso",
 "54":"ufficio 1",
 "55":"slot car",
 "56":"emeroteca",
-"57":"fablab 2"}
+"57":"fablab 2",
 "58":"ufficio 2",
 "61":"sala riunioni 2",
 "62":"sala riunioni 1",
@@ -33,7 +33,7 @@ nomi = {"11":"ingresso",
 "64":"sala riunioni 4",
 "65":"antibagno p2",
 "66":"bagno p2",
-"67":"sgabuzzino sala riunioni",
+"67":"sgabuzzino sala riunioni"}
 
 def send(id,stat):
 	xor = id^ter^quat^stat
