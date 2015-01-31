@@ -2,6 +2,8 @@
 import serial
 import cherrypy
 
+ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
+
 def send(id,stat):
 	header = 0xa8
 	ter = 0x50
@@ -9,6 +11,7 @@ def send(id,stat):
 	xor = id^ter^quat^stat
 	trailer = 0xa3
 	key = "@W7A8"+hex(id)[2:4]+"50120"+hex(stat)[2:4]+str(hex(xor)[2:4])+"A3"
+	ser.write(key.encode())
 	return key
 
 class LightAPI(object):
@@ -18,7 +21,6 @@ class LightAPI(object):
 		return answer
 
 
-ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 cherrypy.quickstart(LightAPI())
 
 array = []
