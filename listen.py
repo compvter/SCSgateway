@@ -1,6 +1,25 @@
 #!/usr/bin/python3
 import serial
+import cherrypy
+
+def send(id,stat):
+	header = 0xa8
+	ter = 0x50
+	quat = 0x12
+	xor = id^ter^quat^stat
+	trailer = 0xa3
+	key = "@W7A8"+hex(id)[2:4]+"50120"+hex(stat)[2:4]+str(hex(xor)[2:4])+"A3"
+	return key
+
+class LightAPI(object):
+	@cherrypy.expose
+	def action(self,id=0,status=0):
+		answer = send(int(id,16),int(status,16))
+		return answer
+
+
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
+cherrypy.quickstart(LightAPI())
 
 array = []
 trasmissione = 0
