@@ -4,28 +4,6 @@ import cherrypy
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
-def send(id,stat):
-	header = 0xa8
-	ter = 0x50
-	quat = 0x12
-	xor = id^ter^quat^stat
-	trailer = 0xa3
-	key = "@W7A8"+hex(id)[2:4]+"50120"+hex(stat)[2:4]+str(hex(xor)[2:4])+"A3"
-	ser.write(key.encode())
-	return key
-
-class LightAPI(object):
-	@cherrypy.expose
-	def action(self,id=0,status=0):
-		answer = send(int(id,16),int(status,16))
-		return answer
-
-
-cherrypy.quickstart(LightAPI())
-
-array = []
-trasmissione = 0
-
 nomi = {"11":"ingresso",
 "12":"ingresso laterale",
 "13":"reception",
@@ -56,6 +34,36 @@ nomi = {"11":"ingresso",
 "58":"ufficio 2",
 "53":"fablab 1",
 "54":"fablab 2"}
+
+def send(id,stat):
+	header = 0xa8
+	ter = 0x50
+	quat = 0x12
+	xor = id^ter^quat^stat
+	trailer = 0xa3
+	key = "@W7A8"+hex(id)[2:4]+"50120"+hex(stat)[2:4]+str(hex(xor)[2:4])+"A3"
+	ser.write(key.encode())
+	return key
+
+class LightAPI(object):
+	@cherrypy.expose
+	def action(self,id=0,status=0):
+		answer = send(int(id,16),int(status,16))
+		return answer
+
+	def index(self):
+		body = """<html><title>comPVter Lighting system</title><body>"""
+		for i in nomi:
+			name = nomi[i]
+			body = ''.join([body,name," <a href=\"/action?id=",i,"&status=8\">ON</a>  <a href=\"/action?id=",i,"&status=4\">OFF</a><br>"])
+		return body
+	index.exposed = True
+
+
+cherrypy.quickstart(LightAPI())
+
+array = []
+trasmissione = 0
 
 while True:
 	line=ser.readline()
