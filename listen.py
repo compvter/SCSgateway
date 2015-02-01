@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import serial
 import cherrypy
+import threading
+import time
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
@@ -8,10 +10,10 @@ nomi = {"11":"ingresso",
 "12":"ingresso laterale",
 "13":"reception",
 "14":"scala",
-"15":"corridoio p1",
+"15":"corridoio pT",
 "16":"cabinati",
-"17":"antibagno p1",
-"18":"bagno p1",
+"17":"antibagno pT",
+"18":"bagno pT",
 "21":"museo 1",
 "22":"museo 2",
 "23":"museo 3",
@@ -19,7 +21,7 @@ nomi = {"11":"ingresso",
 "33":"simulatore",
 "34":"sottoscala",
 "35":"rack",
-"51":"corridoio p2",
+"51":"corridoio p1",
 "52":"sgabuzzino rack",
 "53":"fablab 1",
 "54":"ufficio 1",
@@ -31,31 +33,43 @@ nomi = {"11":"ingresso",
 "62":"sala riunioni 1",
 "63":"sala riunioni 3",
 "64":"sala riunioni 4",
-"65":"antibagno p2",
-"66":"bagno p2",
+"65":"antibagno p1",
+"66":"bagno p1",
 "67":"sgabuzzino sala riunioni"}
 
 def send(id,stat):
 	xor = id^0x50^0x12^stat
 	key = "@W7A8"+hex(id)[2:4]+"50120"+hex(stat)[2:4]+str(hex(xor)[2:4])+"A3"
 	ser.write(key.encode())
+	print(key)
+	time.sleep(0.5)
 	return key
+
+def broadcast(status):
+	for i in nomi:
+		id = int(i,16)
+		send(id,status)
+	return "Tutto fatto"
 
 class LightAPI(object):
 	@cherrypy.expose
 	def action(self,id=0,status=0):
-		answer = send(int(id,16),int(status,16))
+		answer = ""
+		if int(id,16) == 255:
+			broadcast(int(status,16))
+		else:
+			answer = send(int(id,16),int(status,16))
 		return answer
-
 	def index(self):
 		body = """<html><title>comPVter Lighting system</title><body>"""
 		for i in nomi:
 			name = nomi[i]
 			body = ''.join([body,name," <a href=\"/action?id=",i,"&status=8\">ON</a>  <a href=\"/action?id=",i,"&status=4\">OFF</a><br>"])
+		body = ''.join([body,"<a href=/action?id=ff&status=4>OFF GENERALE</a>"])
 		return body
 	index.exposed = True
 
-
+cherrypy.server.socket_host = "0.0.0.0"
 cherrypy.quickstart(LightAPI())
 
 array = []
