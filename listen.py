@@ -36,7 +36,7 @@ nomi = {"11":"ingresso",
 "67":"sgabuzzino sala riunioni"}
 
 def send(id,stat):
-	xor = id^ter^quat^stat
+	xor = id^0x50^0x12^stat
 	key = "@W7A8"+hex(id)[2:4]+"50120"+hex(stat)[2:4]+str(hex(xor)[2:4])+"A3"
 	ser.write(key.encode())
 	return key
