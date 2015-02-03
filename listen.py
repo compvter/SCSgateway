@@ -109,15 +109,18 @@ class LightAPI(object):
 		return body
 	index.exposed = True
 
-sreadqueue = queue.Queue()
-inpacketqueue = queue.Queue()
-swritequeue = queue.Queue()
+sreadqueue 		= queue.Queue()	#Queue for packets coming from the serial
+inpacketqueue 	= queue.Queue()	#Queue of deduplicated packets
+swritequeue 	= queue.Queue()	#Queue of commands to write
 
 serialreadThread = threading.Thread(target=serialread)
 serialreadThread.start()
 
 printThread = threading.Thread(target=printqueue)
 printThread.start()
+
+dedupThread = threading.Thread(target=deduplicator)
+dedupThread.start()
 
 cherrypy.server.socket_host = "0.0.0.0"
 cherrypy.quickstart(LightAPI())
