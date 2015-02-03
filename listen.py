@@ -52,23 +52,23 @@ def serialread():  #Continuous loop to read serial
 		except IndexError:
 			octet = None
 
-		if octet == "A5":					#Acknowledgement TODO
-			sreadqueue.put(["ACK"])
+		#if trasmissione is False and octet == "A5":					#Acknowledgement TODO
+			#ackqueue.put(["ACK"])
 
 		if octet == "A8":					#Start of frame
-			trasmissione = 1
+			trasmissione = True
 
-		if trasmissione == 1:
+		if trasmissione is True:
 			array.append(octet)
 
 		if len(array) >= 7: 				#Reached max MTU
 			if octet == "A3":				#End of frame
-				trasmissione = 0
+				trasmissione = False
 				checksum = int(array[1],16)^int(array[2],16)^int(array[3],16)^int(array[4],16)
 				if checksum == int(array[5],16):
 					sreadqueue.put(array)
 			else:	 #The packet did not terminate with A3. This is an error. Drop everything.
-				trasmissione = 0
+				trasmissione = False
 				array = []
 
 
