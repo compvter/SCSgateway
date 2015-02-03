@@ -3,8 +3,10 @@ import serial
 import cherrypy
 import threading
 import time
+import threading
+import queue
 
-ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
 
 nomi = {"11":"ingresso",
 "12":"ingresso laterale",
@@ -37,29 +39,68 @@ nomi = {"11":"ingresso",
 "66":"bagno p1",
 "67":"sgabuzzino sala riunioni"}
 
-def send(id,stat):
-	xor = id^0x50^0x12^stat
-	key = "@W7A8"+hex(id)[2:4]+"50120"+hex(stat)[2:4]+str(hex(xor)[2:4])+"A3"
-	ser.write(key.encode())
-	print(key)
-	time.sleep(0.5)
-	return key
 
-def broadcast(status):
-	for i in nomi:
-		id = int(i,16)
-		send(id,status)
-	return "Tutto fatto"
+def serialread():
+	array = []
+	trasmissione = 0
+	while True:
+		line=ser.readline()
+		print("ooo")
+		try:
+			octet=line.decode('utf-8').split(" ")[1]
+			if octet.startswith("SCS"):  #Only messages from the bus, no echo
+				sreadqueue.put(inbox)
+		except IndexError:
+			octet = None
+
+		if octet == "A5":
+			sreadqueue.put(["ACK"])
+
+		if octet == "A8":
+			trasmissione = 1
+
+		if trasmissione == 1:
+			array.append(octet)
+
+		if len(array) >= 7: #Reached max MTU
+			if octet == "A3":
+				trasmissione = 0
+				checksum = int(array[1],16)^int(array[2],16)^int(array[3],16)^int(array[4],16)
+				if checksum == int(array[5],16):
+					sreadqueue.put(array)
+			else:	 #The packet did not terminate with A3. This is an error. Drop everything.
+				trasmissione = 0
+				array = []
+
+
+def serialprint(serial,message):
+	xor = message[0]^0x50^0x12^message[1]
+	key = "@W7A8"+hex(message[0])[2:4]+"50120"+hex(message[1])[2:4]+str(hex(xor)[2:4])+"A3"
+	serial.write(key.encode())
+	print(key.encode())
+
+
+def deduplicator():
+	lastpacket = None
+	while True:
+		serialinput = sreadqueue.get()
+		if serialinput is not None and serialinput is not lastpacket:  #If the function returned something (i.e. a packet) and it's not a duplicate
+			inpacketqueue.put(serialinput)
+			lastpacket = serialinput
+
+
+def printqueue():
+	while True:
+		serialprint(ser,swritequeue.get())
+
 
 class LightAPI(object):
 	@cherrypy.expose
 	def action(self,id=0,status=0):
 		answer = ""
-		if int(id,16) == 255:
-			broadcast(int(status,16))
-		else:
-			answer = send(int(id,16),int(status,16))
-		return answer
+		swritequeue.put([int(id,16),int(status,16)])
+#		return answer
+
 	def index(self):
 		body = """<html><title>comPVter Lighting system</title><body>"""
 		for i in nomi:
@@ -69,37 +110,17 @@ class LightAPI(object):
 		return body
 	index.exposed = True
 
+sreadqueue = queue.Queue()
+inpacketqueue = queue.Queue()
+swritequeue = queue.Queue()
+
+serialreadThread = threading.Thread(target=serialread)
+serialreadThread.start()
+
+printThread = threading.Thread(target=printqueue)
+printThread.start()
+
 cherrypy.server.socket_host = "0.0.0.0"
 cherrypy.quickstart(LightAPI())
 
-array = []
-trasmissione = 0
 
-while True:
-	line=ser.readline()
-	try:
-		octet=line.decode('utf-8').split(" ")[1]
-	except IndexError:
-		octet = "00"
-
-	if octet == "A5":
-		print("ACK")
-
-	if octet == "A8":
-		trasmissione = 1
-
-	if trasmissione == 1:
-		array.append(octet)
-
-	if octet == "A3":
-		trasmissione = 0
-		checksum = int(array[1],16)^int(array[2],16)^int(array[3],16)^int(array[4],16)
-		if checksum == int(array[5],16):
-			comando = "ON"
-			if array[4] == "04":
-				comando = "OFF"
-			print(nomi[array[2]], comando)
-			#print("ERRORE CHECKSUM")
-#		print("checksum "+hex(checksum))
-		
-		array=[]
