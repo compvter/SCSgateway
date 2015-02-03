@@ -40,30 +40,29 @@ nomi = {"11":"ingresso",
 "67":"sgabuzzino sala riunioni"}
 
 
-def serialread():
+def serialread():  #Continuous loop to read serial
 	array = []
 	trasmissione = 0
 	while True:
 		line=ser.readline()
-		print("ooo")
 		try:
 			octet=line.decode('utf-8').split(" ")[1]
-			if octet.startswith("SCS"):  #Only messages from the bus, no echo
+			if octet.startswith("SCS"):		#Only messages from the bus, no echo
 				sreadqueue.put(inbox)
 		except IndexError:
 			octet = None
 
-		if octet == "A5":
+		if octet == "A5":					#Acknowledgement TODO
 			sreadqueue.put(["ACK"])
 
-		if octet == "A8":
+		if octet == "A8":					#Start of frame
 			trasmissione = 1
 
 		if trasmissione == 1:
 			array.append(octet)
 
-		if len(array) >= 7: #Reached max MTU
-			if octet == "A3":
+		if len(array) >= 7: 				#Reached max MTU
+			if octet == "A3":				#End of frame
 				trasmissione = 0
 				checksum = int(array[1],16)^int(array[2],16)^int(array[3],16)^int(array[4],16)
 				if checksum == int(array[5],16):
@@ -84,7 +83,7 @@ def deduplicator():
 	lastpacket = None
 	while True:
 		serialinput = sreadqueue.get()
-		if serialinput is not None and serialinput is not lastpacket:  #If the function returned something (i.e. a packet) and it's not a duplicate
+		if serialinput is not None and serialinput is not lastpacket:  #If the queue returned something (i.e. a packet) and it's not a duplicate, forward along
 			inpacketqueue.put(serialinput)
 			lastpacket = serialinput
 
