@@ -84,13 +84,23 @@ def deduplicator():
 			inpacketqueue.put(serialinput)
 			lastpacket = serialinput[0:7]
 
+def logger(packet):
+	print(packet)
+	if [int(packet[4]) == 4]:
+		print("Falso")
+		nomi[str(packet[2])][1] = False
+	elif [int(packet[4]) == 8]:
+		print("Vero")
+		nomi[str(packet[2])][1] = True
+	print(nomi[str(packet[2])])
+
 def switch():
 	while True:
 		time.sleep(0.01)
 		if not swritequeue.empty():
 			serialprint(ser,swritequeue.get())
 		if not inpacketqueue.empty():
-			print(inpacketqueue.get())
+			logger(inpacketqueue.get())
 
 class LightAPI(object):
 	@cherrypy.expose
