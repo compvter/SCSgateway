@@ -75,22 +75,21 @@ def serialprint(serial,message):
 	xor = message[0]^0x50^0x12^message[1]
 	key = "@W7A8"+hex(message[0])[2:4]+"50120"+hex(message[1])[2:4]+str(hex(xor)[2:4])+"A3"
 	serial.write(key.encode())
-	print(key.encode())
-
 
 def deduplicator():
 	lastpacket = ['inizio'] #Dummy packet
 	while True:
 		serialinput = sreadqueue.get()
 		if (set(serialinput) != set(lastpacket)):  #If the queue returned something (i.e. a packet) and it's not a duplicate, forward along
-			#inpacketqueue.put(serialinput)
+			inpacketqueue.put(serialinput)
 			lastpacket = serialinput[0:7]
-			print(lastpacket)
 
-def printqueue():
+def switch():
 	while True:
-		serialprint(ser,swritequeue.get())
-
+		if not swritequeue.empty():
+			serialprint(ser,swritequeue.get())
+		if not inpacketqueue.empty():
+			print(inpacketqueue.get())
 
 class LightAPI(object):
 	@cherrypy.expose
@@ -115,8 +114,8 @@ swritequeue 	= queue.Queue()	#Queue of commands to write
 serialreadThread = threading.Thread(target=serialread)
 serialreadThread.start()
 
-printThread = threading.Thread(target=printqueue)
-printThread.start()
+switchThread = threading.Thread(target=switch)
+switchThread.start()
 
 dedupThread = threading.Thread(target=deduplicator)
 dedupThread.start()
