@@ -86,6 +86,7 @@ def deduplicator():
 
 def switch():
 	while True:
+		time.sleep(0.01)
 		if not swritequeue.empty():
 			serialprint(ser,swritequeue.get())
 		if not inpacketqueue.empty():
