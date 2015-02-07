@@ -6,7 +6,7 @@ import time
 import threading
 import queue
 
-ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
 nomi = {"11":"ingresso",
 "12":"ingresso laterale",
@@ -45,18 +45,17 @@ def serialread():  #Continuous loop to read serial
 	trasmissione = 0
 	while True:
 		line=ser.readline()
-		try:
-			octet=line.decode('utf-8').split(" ")[1]
-			if octet.startswith("SCS"):		#Only messages from the bus, no echo
-				sreadqueue.put(inbox)
-		except IndexError:
-			octet = None
-
-		#if trasmissione is False and octet == "A5":					#Acknowledgement TODO
-			#ackqueue.put(["ACK"])
+		octet=line.decode('utf-8').split()
+		if len(octet) == 2:		#Only messages from the bus, no echo
+			octet=octet[1]
+		else:
+			octet=None
 
 		if octet == "A8":					#Start of frame
 			trasmissione = True
+
+		#if trasmissione is False and octet == "A5":					#Acknowledgement TODO
+			#ackqueue.put(["ACK"])
 
 		if trasmissione is True:
 			array.append(octet)
@@ -80,13 +79,13 @@ def serialprint(serial,message):
 
 
 def deduplicator():
-	lastpacket = None
+	lastpacket = ['inizio'] #Dummy packet
 	while True:
 		serialinput = sreadqueue.get()
-		if serialinput is not None and serialinput is not lastpacket:  #If the queue returned something (i.e. a packet) and it's not a duplicate, forward along
-			inpacketqueue.put(serialinput)
-			lastpacket = serialinput
-
+		if (set(serialinput) != set(lastpacket)):  #If the queue returned something (i.e. a packet) and it's not a duplicate, forward along
+			#inpacketqueue.put(serialinput)
+			lastpacket = serialinput[0:7]
+			print(lastpacket)
 
 def printqueue():
 	while True:
@@ -124,5 +123,3 @@ dedupThread.start()
 
 cherrypy.server.socket_host = "0.0.0.0"
 cherrypy.quickstart(LightAPI())
-
-
