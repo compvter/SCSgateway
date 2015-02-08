@@ -40,6 +40,10 @@ nomi = {"11":["ingresso",False],
 "67":["sgabuzzino sala riunioni",False]}
 
 
+ser.write("@MA".encoode())
+ser.write("@l".encode())
+
+
 def serialread():  #Continuous loop to read serial
 	array = []
 	trasmissione = 0
