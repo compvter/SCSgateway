@@ -40,7 +40,7 @@ nomi = {"11":["ingresso",False],
 "67":["sgabuzzino sala riunioni",False]}
 
 
-ser.write("@MA".encoode())
+ser.write("@MA".encode())
 ser.write("@l".encode())
 
 
