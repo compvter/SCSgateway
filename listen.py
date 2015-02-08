@@ -89,14 +89,10 @@ def deduplicator():
 			lastpacket = serialinput[0:7]
 
 def logger(packet):
-	print(packet)
-	if [int(packet[4]) == 4]:
-		print("Falso")
+	if int(packet[4]) == 4:
 		nomi[str(packet[2])][1] = False
-	elif [int(packet[4]) == 8]:
-		print("Vero")
+	elif int(packet[4]) == 8:
 		nomi[str(packet[2])][1] = True
-	print(nomi[str(packet[2])])
 
 def switch():
 	while True:
