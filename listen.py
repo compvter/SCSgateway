@@ -5,6 +5,7 @@ import threading
 import time
 import threading
 import queue
+import json
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
