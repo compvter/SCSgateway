@@ -9,36 +9,37 @@ import json
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
-nomi = {"11":[False,False,"ingresso"],
-"12":[False,False,"ingresso laterale"],
-"13":[False,False,"reception"],
-"14":[False,False,"scala"],
-"15":[False,False,"corridoio pT"],
-"16":[False,False,"cabinati"],
-"17":[False,False,"antibagno pT"],
-"18":[False,False,"bagno pT"],
-"21":[False,False,"museo 1"],
-"22":[False,False,"museo 2"],
-"23":[False,False,"museo 3"],
-"24":[False,False,"sgabuzzino museo"],
-"33":[False,False,"simulatore"],
-"34":[False,False,"sottoscala"],
-"35":[False,False,"rack"],
-"51":[False,False,"corridoio p1"],
-"52":[False,False,"sgabuzzino rack"],
-"53":[False,False,"fablab 1"],
-"54":[False,False,"ufficio 1"],
-"55":[False,False,"slot car"],
-"56":[False,False,"emeroteca"],
-"57":[False,False,"fablab 2"],
-"58":[False,False,"ufficio 2"],
-"61":[False,False,"sala riunioni 2"],
-"62":[False,False,"sala riunioni 1"],
-"63":[False,False,"sala riunioni 3"],
-"64":[False,False,"sala riunioni 4"],
-"65":[False,False,"antibagno p1"],
-"66":[False,False,"bagno p1"],
-"67":[False,False,"sgabuzzino sala riunioni"]}
+nomi = {
+"11":{"on" = False, "fromweb" = False, "description" = "ingresso"],
+"12":{"on" = False, "fromweb" = False, "description" = "ingresso laterale"},
+"13":{"on" = False, "fromweb" = False, "description" = "reception"},
+"14":{"on" = False, "fromweb" = False, "description" = "scala"},
+"15":{"on" = False, "fromweb" = False, "description" = "corridoio pT"},
+"16":{"on" = False, "fromweb" = False, "description" = "cabinati"},
+"17":{"on" = False, "fromweb" = False, "description" = "antibagno pT"},
+"18":{"on" = False, "fromweb" = False, "description" = "bagno pT"},
+"21":{"on" = False, "fromweb" = False, "description" = "museo 1"},
+"22":{"on" = False, "fromweb" = False, "description" = "museo 2"},
+"23":{"on" = False, "fromweb" = False, "description" = "museo 3"},
+"24":{"on" = False, "fromweb" = False, "description" = "sgabuzzino museo"},
+"33":{"on" = False, "fromweb" = False, "description" = "simulatore"},
+"34":{"on" = False, "fromweb" = False, "description" = "sottoscala"},
+"35":{"on" = False, "fromweb" = False, "description" = "rack"],
+"51":{"on" = False, "fromweb" = False, "description" = "corridoio p1"},
+"52":{"on" = False, "fromweb" = False, "description" = "sgabuzzino rack"},
+"53":{"on" = False, "fromweb" = False, "description" = "fablab 1"},
+"54":{"on" = False, "fromweb" = False, "description" = "ufficio 1"},
+"55":{"on" = False, "fromweb" = False, "description" = "slot car"},
+"56":{"on" = False, "fromweb" = False, "description" = "emeroteca"},
+"57":{"on" = False, "fromweb" = False, "description" = "fablab 2"},
+"58":{"on" = False, "fromweb" = False, "description" = "ufficio 2"},
+"61":{"on" = False, "fromweb" = False, "description" = "sala riunioni 2"},
+"62":{"on" = False, "fromweb" = False, "description" = "sala riunioni 1"},
+"63":{"on" = False, "fromweb" = False, "description" = "sala riunioni 3"},
+"64":{"on" = False, "fromweb" = False, "description" = "sala riunioni 4"},
+"65":{"on" = False, "fromweb" = False, "description" = "antibagno p1"},
+"66":{"on" = False, "fromweb" = False, "description" = "bagno p1"},
+"67":{"on" = False, "fromweb" = False, "description" = "sgabuzzino sala riunioni"}}
 
 
 ser.write("@MA".encode())
@@ -92,9 +93,10 @@ def deduplicator():
 
 def logger(packet):
 	if int(packet[4]) == 4:
-		nomi[str(packet[2])][1] = False
+		nomi[str(packet[2])]["on"] = False
+		nomi[str(packet[2])]["fromweb"] = False
 	elif int(packet[4]) == 8:
-		nomi[str(packet[2])][1] = True
+		nomi[str(packet[2])]["on"] = True
 
 def switch():
 	while True:
@@ -109,20 +111,13 @@ class LightAPI(object):
 	def action(self,id=0,status=0):
 		answer = ""
 		swritequeue.put([int(id,16),int(status,16)])
+		nomi
 #		return answer
 
 	def status(self):
 		return json.dumps(nomi,sort_keys=True)
 	status.exposed = True
 
-	def index(self):
-		body = """<html><title>comPVter Lighting system</title><body>"""
-		for i in nomi:
-			name = nomi[i]
-			body = ''.join([body,name," <a href=\"/action?id=",i,"&status=8\">ON</a>  <a href=\"/action?id=",i,"&status=4\">OFF</a><br>"])
-		body = ''.join([body,"<a href=/action?id=ff&status=4>OFF GENERALE</a>"])
-		return body
-	index.exposed = True
 
 sreadqueue 		= queue.Queue()	#Queue for packets coming from the serial
 inpacketqueue 	= queue.Queue()	#Queue of deduplicated packets
