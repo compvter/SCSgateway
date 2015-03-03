@@ -8,36 +8,36 @@ import queue
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
-nomi = {"11":["ingresso",False],
-"12":["ingresso laterale",False],
-"13":["reception",False],
-"14":["scala",False],
-"15":["corridoio pT",False],
-"16":["cabinati",False],
-"17":["antibagno pT",False],
-"18":["bagno pT",False],
-"21":["museo 1",False],
-"22":["museo 2",False],
-"23":["museo 3",False],
-"24":["sgabuzzino museo",False],
-"33":["simulatore",False],
-"34":["sottoscala",False],
-"35":["rack",False],
-"51":["corridoio p1",False],
-"52":["sgabuzzino rack",False],
-"53":["fablab 1",False],
-"54":["ufficio 1",False],
-"55":["slot car",False],
-"56":["emeroteca",False],
-"57":["fablab 2",False],
-"58":["ufficio 2",False],
-"61":["sala riunioni 2",False],
-"62":["sala riunioni 1",False],
-"63":["sala riunioni 3",False],
-"64":["sala riunioni 4",False],
-"65":["antibagno p1",False],
-"66":["bagno p1",False],
-"67":["sgabuzzino sala riunioni",False]}
+nomi = {"11":["ingresso",False,False],
+"12":["ingresso laterale",False,False],
+"13":["reception",False,False],
+"14":["scala",False,False],
+"15":["corridoio pT",False,False],
+"16":["cabinati",False,False],
+"17":["antibagno pT",False,False],
+"18":["bagno pT",False,False],
+"21":["museo 1",False,False],
+"22":["museo 2",False,False],
+"23":["museo 3",False,False],
+"24":["sgabuzzino museo",False,False],
+"33":["simulatore",False,False],
+"34":["sottoscala",False,False],
+"35":["rack",False,False],
+"51":["corridoio p1",False,False],
+"52":["sgabuzzino rack",False,False],
+"53":["fablab 1",False,False],
+"54":["ufficio 1",False,False],
+"55":["slot car",False,False],
+"56":["emeroteca",False,False],
+"57":["fablab 2",False,False],
+"58":["ufficio 2",False,False],
+"61":["sala riunioni 2",False,False],
+"62":["sala riunioni 1",False,False],
+"63":["sala riunioni 3",False,False],
+"64":["sala riunioni 4",False,False],
+"65":["antibagno p1",False,False],
+"66":["bagno p1",False,False],
+"67":["sgabuzzino sala riunioni",False,False]}
 
 
 ser.write("@MA".encode())
@@ -108,6 +108,10 @@ class LightAPI(object):
 		answer = ""
 		swritequeue.put([int(id,16),int(status,16)])
 #		return answer
+
+	def status(self):
+		return json.dumps(nomi,sort_keys=True)
+	status.exposed = True
 
 	def index(self):
 		body = """<html><title>comPVter Lighting system</title><body>"""
