@@ -9,36 +9,36 @@ import json
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
-nomi = {"11":["ingresso",False,False],
-"12":["ingresso laterale",False,False],
-"13":["reception",False,False],
-"14":["scala",False,False],
-"15":["corridoio pT",False,False],
-"16":["cabinati",False,False],
-"17":["antibagno pT",False,False],
-"18":["bagno pT",False,False],
-"21":["museo 1",False,False],
-"22":["museo 2",False,False],
-"23":["museo 3",False,False],
-"24":["sgabuzzino museo",False,False],
-"33":["simulatore",False,False],
-"34":["sottoscala",False,False],
-"35":["rack",False,False],
-"51":["corridoio p1",False,False],
-"52":["sgabuzzino rack",False,False],
-"53":["fablab 1",False,False],
-"54":["ufficio 1",False,False],
-"55":["slot car",False,False],
-"56":["emeroteca",False,False],
-"57":["fablab 2",False,False],
-"58":["ufficio 2",False,False],
-"61":["sala riunioni 2",False,False],
-"62":["sala riunioni 1",False,False],
-"63":["sala riunioni 3",False,False],
-"64":["sala riunioni 4",False,False],
-"65":["antibagno p1",False,False],
-"66":["bagno p1",False,False],
-"67":["sgabuzzino sala riunioni",False,False]}
+nomi = {"11":[False,False,"ingresso"],
+"12":[False,False,"ingresso laterale"],
+"13":[False,False,"reception"],
+"14":[False,False,"scala"],
+"15":[False,False,"corridoio pT"],
+"16":[False,False,"cabinati"],
+"17":[False,False,"antibagno pT"],
+"18":[False,False,"bagno pT"],
+"21":[False,False,"museo 1"],
+"22":[False,False,"museo 2"],
+"23":[False,False,"museo 3"],
+"24":[False,False,"sgabuzzino museo"],
+"33":[False,False,"simulatore"],
+"34":[False,False,"sottoscala"],
+"35":[False,False,"rack"],
+"51":[False,False,"corridoio p1"],
+"52":[False,False,"sgabuzzino rack"],
+"53":[False,False,"fablab 1"],
+"54":[False,False,"ufficio 1"],
+"55":[False,False,"slot car"],
+"56":[False,False,"emeroteca"],
+"57":[False,False,"fablab 2"],
+"58":[False,False,"ufficio 2"],
+"61":[False,False,"sala riunioni 2"],
+"62":[False,False,"sala riunioni 1"],
+"63":[False,False,"sala riunioni 3"],
+"64":[False,False,"sala riunioni 4"],
+"65":[False,False,"antibagno p1"],
+"66":[False,False,"bagno p1"],
+"67":[False,False,"sgabuzzino sala riunioni"]}
 
 
 ser.write("@MA".encode())
@@ -88,6 +88,7 @@ def deduplicator():
 		if (set(serialinput) != set(lastpacket)):  #If the queue returned something (i.e. a packet) and it's not a duplicate, forward along
 			inpacketqueue.put(serialinput)
 			lastpacket = serialinput[0:7]
+			print(lastpacket)
 
 def logger(packet):
 	if int(packet[4]) == 4:
