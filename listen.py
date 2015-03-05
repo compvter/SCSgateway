@@ -6,6 +6,7 @@ import time
 import threading
 import queue
 import json
+import datetime
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
@@ -40,7 +41,6 @@ nomi = {
 "65":{"on": False, "fromweb": False, "description": "antibagno p1"},
 "66":{"on": False, "fromweb": False, "description": "bagno p1"},
 "67":{"on": False, "fromweb": False, "description": "sgabuzzino sala riunioni"}}
-
 
 ser.write("@MA".encode())
 ser.write("@l".encode())
@@ -93,10 +93,19 @@ def deduplicator():
 
 def logger(packet):
 	if int(packet[4]) == 4:
-		nomi[str(packet[2])]["on"] = False
-		nomi[str(packet[2])]["fromweb"] = False
+		try:
+			nomi[str(packet[2])]["on"] = False
+			nomi[str(packet[2])]["fromweb"] = False
+			print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" OFF")
+		except:
+			pass
 	elif int(packet[4]) == 8:
-		nomi[str(packet[2])]["on"] = True
+		try:
+			nomi[str(packet[2])]["on"] = True
+			print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" ON")
+		except:
+			pass
+
 
 def switch():
 	while True:
@@ -118,10 +127,8 @@ class LightAPI(object):
 		tempdict = {}
 		for lightid in nomi:
 			tempdict[str(lightid)] = nomi[lightid]["on"]
-			return json.dumps(tempdict,sort_keys=True)
+		return json.dumps(tempdict,sort_keys=True)
 	status.exposed = True
-
-
 
 sreadqueue 		= queue.Queue()	#Queue for packets coming from the serial
 inpacketqueue 	= queue.Queue()	#Queue of deduplicated packets
