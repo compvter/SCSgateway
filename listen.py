@@ -11,36 +11,36 @@ import datetime
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
 nomi = {
-"11":{"on": False, "fromweb": False, "description": "ingresso"},
-"12":{"on": False, "fromweb": False, "description": "ingresso laterale"},
-"13":{"on": False, "fromweb": False, "description": "reception"},
-"14":{"on": False, "fromweb": False, "description": "scala"},
-"15":{"on": False, "fromweb": False, "description": "corridoio pT"},
-"16":{"on": False, "fromweb": False, "description": "cabinati"},
-"17":{"on": False, "fromweb": False, "description": "antibagno pT"},
-"18":{"on": False, "fromweb": False, "description": "bagno pT"},
-"21":{"on": False, "fromweb": False, "description": "museo 1"},
-"22":{"on": False, "fromweb": False, "description": "museo 2"},
-"23":{"on": False, "fromweb": False, "description": "museo 3"},
-"24":{"on": False, "fromweb": False, "description": "sgabuzzino museo"},
-"33":{"on": False, "fromweb": False, "description": "simulatore"},
-"34":{"on": False, "fromweb": False, "description": "sottoscala"},
-"35":{"on": False, "fromweb": False, "description": "rack"},
-"51":{"on": False, "fromweb": False, "description": "corridoio p1"},
-"52":{"on": False, "fromweb": False, "description": "sgabuzzino rack"},
-"53":{"on": False, "fromweb": False, "description": "fablab 1"},
-"54":{"on": False, "fromweb": False, "description": "ufficio 1"},
-"55":{"on": False, "fromweb": False, "description": "slot car"},
-"56":{"on": False, "fromweb": False, "description": "emeroteca"},
-"57":{"on": False, "fromweb": False, "description": "fablab 2"},
-"58":{"on": False, "fromweb": False, "description": "ufficio 2"},
-"61":{"on": False, "fromweb": False, "description": "sala riunioni 2"},
-"62":{"on": False, "fromweb": False, "description": "sala riunioni 1"},
-"63":{"on": False, "fromweb": False, "description": "sala riunioni 3"},
-"64":{"on": False, "fromweb": False, "description": "sala riunioni 4"},
-"65":{"on": False, "fromweb": False, "description": "antibagno p1"},
-"66":{"on": False, "fromweb": False, "description": "bagno p1"},
-"67":{"on": False, "fromweb": False, "description": "sgabuzzino sala riunioni"}}
+"11":{"on": False, "fromweb": False, "watt":270, "description": "ingresso"},
+"12":{"on": False, "fromweb": False, "watt":216, "description": "ingresso laterale"},
+"13":{"on": False, "fromweb": False, "watt":162, "description": "reception"},
+"14":{"on": False, "fromweb": False, "watt":144, "description": "scala"},
+"15":{"on": False, "fromweb": False, "watt":108, "description": "corridoio pT"},
+"16":{"on": False, "fromweb": False, "watt":108, "description": "cabinati"},
+"17":{"on": False, "fromweb": False, "watt":18, "description": "antibagno pT"},
+"18":{"on": False, "fromweb": False, "watt":36, "description": "bagno pT"},
+"21":{"on": False, "fromweb": False, "watt":324, "description": "museo 1"},
+"22":{"on": False, "fromweb": False, "watt":324, "description": "museo 2"},
+"23":{"on": False, "fromweb": False, "watt":324, "description": "museo 3"},
+"24":{"on": False, "fromweb": False, "watt":60, "description": "sgabuzzino museo"},
+"33":{"on": False, "fromweb": False, "watt":270, "description": "simulatore"},
+"34":{"on": False, "fromweb": False, "watt":36, "description": "sottoscala"},
+"35":{"on": False, "fromweb": False, "watt":60, "description": "rack"},
+"51":{"on": False, "fromweb": False, "watt":162, "description": "corridoio p1"},
+"52":{"on": False, "fromweb": False, "watt":60, "description": "sgabuzzino rack"},
+"53":{"on": False, "fromweb": False, "watt":216, "description": "fablab 1"},
+"54":{"on": False, "fromweb": False, "watt":108, "description": "ufficio 1"},
+"55":{"on": False, "fromweb": False, "watt":270, "description": "slot car"},
+"56":{"on": False, "fromweb": False, "watt":54, "description": "emeroteca"},
+"57":{"on": False, "fromweb": False, "watt":216, "description": "fablab 2"},
+"58":{"on": False, "fromweb": False, "watt":270, "description": "ufficio 2"},
+"61":{"on": False, "fromweb": False, "watt":324, "description": "sala riunioni 2"},
+"62":{"on": False, "fromweb": False, "watt":324, "description": "sala riunioni 1"},
+"63":{"on": False, "fromweb": False, "watt":324, "description": "sala riunioni 3"},
+"64":{"on": False, "fromweb": False, "watt":162, "description": "sala riunioni 4"},
+"65":{"on": False, "fromweb": False, "watt":18, "description": "antibagno p1"},
+"66":{"on": False, "fromweb": False, "watt":36, "description": "bagno p1"},
+"67":{"on": False, "fromweb": False, "watt":60, "description": "sgabuzzino sala riunioni"}}
 
 ser.write("@MA".encode())
 ser.write("@l".encode())
@@ -89,7 +89,6 @@ def deduplicator():
 		if (set(serialinput) != set(lastpacket)):  #If the queue returned something (i.e. a packet) and it's not a duplicate, forward along
 			inpacketqueue.put(serialinput)
 			lastpacket = serialinput[0:7]
-			print(lastpacket)
 
 def logger(packet):
 	if int(packet[4]) == 4:
