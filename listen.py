@@ -48,7 +48,7 @@ ser.write("@l".encode())
 
 def checkdouble(first,second):
 	if nomi[first]["on"] & nomi[second]["on"]:
-		swritequeue.put([int(second,16),int(4,16)])
+		swritequeue.put([int(second,16),0x4])
 
 
 def overload():
