@@ -46,6 +46,12 @@ nomi = {
 ser.write("@MA".encode())
 ser.write("@l".encode())
 
+def postusage():
+	while True:
+		wattage = postqueue.get()
+		r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(wattage)+'}&apikey=e8fd32598350e1568c090d283563057c', timeout=5)
+
+
 def checkdouble(first,second):
 	if nomi[first]["on"] & nomi[second]["on"]:
 		swritequeue.put([int(second,16),0x4])
@@ -68,14 +74,18 @@ def overload():
 	swritequeue.put([0x67,0x4])
 
 
+def postinstconsumption():
+	consumption = 0
+	for i in nomi:
+		this = nomi[i]
+		if this["on"] == True:
+			consumption = consumption + this["watt"]
+	postqueue.put(consumption)
+	print("POST")
+
 def instconsumption():
 	while True:
-		consumption = 0
-		for i in nomi:
-			this = nomi[i]
-			if this["on"] == True:
-				consumption = consumption + this["watt"]
-		r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(consumption)+'}&apikey=e8fd32598350e1568c090d283563057c')
+		postinstconsumption()
 		time.sleep(15)
 
 
@@ -130,12 +140,14 @@ def logger(packet):
 			nomi[str(packet[2])]["on"] = False
 			nomi[str(packet[2])]["fromweb"] = False
 			print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" OFF")
+			postinstconsumption()
 		except:
 			pass
 	elif int(packet[4]) == 8:
 		try:
 			nomi[str(packet[2])]["on"] = True
 			print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" ON")
+			postinstconsumption()
 		except:
 			pass
 
@@ -168,6 +180,7 @@ class LightAPI(object):
 sreadqueue		= queue.Queue()	#Queue for packets coming from the serial
 inpacketqueue	= queue.Queue()	#Queue of deduplicated packets
 swritequeue		= queue.Queue()	#Queue of commands to write
+postqueue		= queue.Queue() #Queue of power usage
 
 serialreadThread = threading.Thread(target=serialread)
 serialreadThread.start()
@@ -180,6 +193,9 @@ dedupThread.start()
 
 loggingThread = threading.Thread(target=instconsumption)
 loggingThread.start()
+
+postusageThread = threading.Thread(target=postusage)
+postusageThread.start()
 
 cherrypy.server.socket_host = "0.0.0.0"
 cherrypy.quickstart(LightAPI())
