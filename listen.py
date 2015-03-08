@@ -48,8 +48,11 @@ ser.write("@l".encode())
 
 def postusage():
 	while True:
-		wattage = postqueue.get()
-		r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(wattage)+'}&apikey=e8fd32598350e1568c090d283563057c', timeout=5)
+		try:
+			wattage = postqueue.get()
+			r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(wattage)+'}&apikey=e8fd32598350e1568c090d283563057c', timeout=5)
+		except:
+			pass
 
 
 def checkdouble(first,second):
@@ -81,7 +84,6 @@ def postinstconsumption():
 		if this["on"] == True:
 			consumption = consumption + this["watt"]
 	postqueue.put(consumption)
-	print("POST")
 
 def instconsumption():
 	while True:
