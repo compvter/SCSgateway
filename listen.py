@@ -7,6 +7,7 @@ import threading
 import queue
 import json
 import datetime
+import requests
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
@@ -44,6 +45,18 @@ nomi = {
 
 ser.write("@MA".encode())
 ser.write("@l".encode())
+
+
+def instconsumption():
+	while True:
+		consumption = 0
+		for i in nomi:
+			this = nomi[i]
+			if this["on"] == True:
+				consumption = consumption + this["watt"]
+		r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(consumption)+'}&apikey=e8fd32598350e1568c090d283563057c')
+		return(consumption)
+		time.sleep(15)
 
 
 def serialread():  #Continuous loop to read serial
@@ -141,6 +154,9 @@ switchThread.start()
 
 dedupThread = threading.Thread(target=deduplicator)
 dedupThread.start()
+
+loggingThread = threading.Thread(target=instconsumption)
+loggingThread.start()
 
 cherrypy.server.socket_host = "0.0.0.0"
 cherrypy.quickstart(LightAPI())
