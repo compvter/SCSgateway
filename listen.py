@@ -46,6 +46,27 @@ nomi = {
 ser.write("@MA".encode())
 ser.write("@l".encode())
 
+def checkdouble(first,second):
+	if nomi[first]["on"] & nomi[second]["on"]:
+		swritequeue.put([int(second,16),int(4,16)])
+
+
+def overload():
+	checkdouble("11","12")
+	checkdouble("13","15")
+	checkdouble("22","21")
+	checkdouble("57","53")
+	checkdouble("54","58")
+	checkdouble("62","61")
+	checkdouble("63","64")
+	checkdouble("14","51")
+	swritequeue.put([0x23,0x4])
+	swritequeue.put([0x24,0x4])
+	swritequeue.put([0x35,0x4])
+	swritequeue.put([0x23,0x4])
+	swritequeue.put([0x56,0x4])
+	swritequeue.put([0x67,0x4])
+
 
 def instconsumption():
 	while True:
@@ -55,7 +76,6 @@ def instconsumption():
 			if this["on"] == True:
 				consumption = consumption + this["watt"]
 		r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(consumption)+'}&apikey=e8fd32598350e1568c090d283563057c')
-		return(consumption)
 		time.sleep(15)
 
 
@@ -94,6 +114,7 @@ def serialprint(serial,message):
 	xor = message[0]^0x50^0x12^message[1]
 	key = "@W7A8"+hex(message[0])[2:4]+"50120"+hex(message[1])[2:4]+str(hex(xor)[2:4])+"A3"
 	serial.write(key.encode())
+	time.sleep(0.75)
 
 def deduplicator():
 	lastpacket = ['inizio'] #Dummy packet
@@ -132,8 +153,10 @@ class LightAPI(object):
 	def action(self,id=0,status=0):
 		answer = ""
 		swritequeue.put([int(id,16),int(status,16)])
-		nomi
-#		return answer
+
+	@cherrypy.expose
+	def poweroverload(self):
+		overload()
 
 	def status(self):
 		tempdict = {}
@@ -142,9 +165,9 @@ class LightAPI(object):
 		return json.dumps(tempdict,sort_keys=True)
 	status.exposed = True
 
-sreadqueue 		= queue.Queue()	#Queue for packets coming from the serial
-inpacketqueue 	= queue.Queue()	#Queue of deduplicated packets
-swritequeue 	= queue.Queue()	#Queue of commands to write
+sreadqueue		= queue.Queue()	#Queue for packets coming from the serial
+inpacketqueue	= queue.Queue()	#Queue of deduplicated packets
+swritequeue		= queue.Queue()	#Queue of commands to write
 
 serialreadThread = threading.Thread(target=serialread)
 serialreadThread.start()
