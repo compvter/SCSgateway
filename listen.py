@@ -173,6 +173,13 @@ class LightAPI(object):
 	def poweroverload(self):
 		overload()
 
+	@cherrypy.expose
+	def statushuman(self):
+		tempdict = {}
+		for lightid in nomi:
+			tempdict[nomi[lightid]["description"]] = nomi[lightid]["on"]
+		return json.dumps(tempdict,sort_keys=True)
+
 	def status(self):
 		tempdict = {}
 		for lightid in nomi:
