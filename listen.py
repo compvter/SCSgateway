@@ -143,17 +143,17 @@ def logger(packet):
 		try:
 			nomi[str(packet[2])]["on"] = False
 			nomi[str(packet[2])]["fromweb"] = False
-			print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" OFF")
+			syslog.syslog(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" OFF")
 			postinstconsumption()
 		except:
-			logging.exception("logger OFF")
+			syslog.syslog(logging.exception("logger OFF"))
 	elif int(packet[4]) == 8:
 		try:
 			nomi[str(packet[2])]["on"] = True
-			print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" ON")
+			syslog.syslog(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" ON")
 			postinstconsumption()
 		except:
-			logging.exception("logger ON")
+			syslog.syslog(logging.exception("logger ON"))
 
 
 def switch():
@@ -187,6 +187,8 @@ class LightAPI(object):
 			tempdict[str(lightid)] = nomi[lightid]["on"]
 		return json.dumps(tempdict,sort_keys=True)
 	status.exposed = True
+
+syslog.openlog(logoption=syslog.LOG_PID)
 
 sreadqueue		= queue.Queue()	#Queue for packets coming from the serial
 inpacketqueue	= queue.Queue()	#Queue of deduplicated packets
