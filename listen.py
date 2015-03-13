@@ -8,6 +8,7 @@ import queue
 import json
 import datetime
 import requests
+import logging
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
@@ -52,7 +53,7 @@ def postusage():
 			wattage = postqueue.get()
 			r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(wattage)+'}&apikey=e8fd32598350e1568c090d283563057c', timeout=5)
 		except:
-			pass
+			logging.exception("Postusage")
 
 
 def checkdouble(first,second):
@@ -144,14 +145,14 @@ def logger(packet):
 			print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" OFF")
 			postinstconsumption()
 		except:
-			pass
+			logging.exception("logger OFF")
 	elif int(packet[4]) == 8:
 		try:
 			nomi[str(packet[2])]["on"] = True
 			print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" ON")
 			postinstconsumption()
 		except:
-			pass
+			logging.exception("logger ON")
 
 
 def switch():
