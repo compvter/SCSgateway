@@ -9,6 +9,7 @@ import json
 import datetime
 import requests
 import logging
+import syslog
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
@@ -53,7 +54,7 @@ def postusage():
 			wattage = postqueue.get()
 			r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(wattage)+'}&apikey=e8fd32598350e1568c090d283563057c', timeout=5)
 		except:
-			logging.exception("Postusage")
+			pass
 
 
 def checkdouble(first,second):
