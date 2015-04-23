@@ -31,11 +31,11 @@ nomi = {
 "35":{"on": False, "fromweb": False, "watt":60, "description": "rack"},
 "51":{"on": False, "fromweb": False, "watt":162, "description": "corridoio p1"},
 "52":{"on": False, "fromweb": False, "watt":60, "description": "sgabuzzino rack"},
-"53":{"on": False, "fromweb": False, "watt":216, "description": "fablab 1"},
+"53":{"on": False, "fromweb": False, "watt":60, "description": "fablab 1"},
 "54":{"on": False, "fromweb": False, "watt":108, "description": "ufficio 1"},
-"55":{"on": False, "fromweb": False, "watt":270, "description": "slot car"},
+"55":{"on": False, "fromweb": False, "watt":60, "description": "slot car"},
 "56":{"on": False, "fromweb": False, "watt":54, "description": "emeroteca"},
-"57":{"on": False, "fromweb": False, "watt":216, "description": "fablab 2"},
+"57":{"on": False, "fromweb": False, "watt":60, "description": "fablab 2"},
 "58":{"on": False, "fromweb": False, "watt":270, "description": "ufficio 2"},
 "61":{"on": False, "fromweb": False, "watt":324, "description": "sala riunioni 2"},
 "62":{"on": False, "fromweb": False, "watt":324, "description": "sala riunioni 1"},
@@ -52,7 +52,7 @@ def postusage():
 	while True:
 		try:
 			wattage = postqueue.get()
-			r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(wattage)+'}&apikey=e8fd32598350e1568c090d283563057c', timeout=5)
+			#r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(wattage)+'}&apikey=e8fd32598350e1568c090d283563057c', timeout=5)
 		except:
 			pass
 
@@ -107,7 +107,7 @@ def serialread():  #Continuous loop to read serial
 		if octet == "A8":					#Start of frame
 			trasmissione = True
 
-		#if trasmissione is False and octet == "A5":					#Acknowledgement TODO
+		#if trasmissione is False and octet == "A5":		#Acknowledgement TODO
 			#ackqueue.put(["ACK"])
 
 		if trasmissione is True:
@@ -118,8 +118,12 @@ def serialread():  #Continuous loop to read serial
 				trasmissione = False
 				checksum = int(array[1],16)^int(array[2],16)^int(array[3],16)^int(array[4],16)
 				if checksum == int(array[5],16):
+					print(array)
 					sreadqueue.put(array)
 			else:	 #The packet did not terminate with A3. This is an error. Drop everything.
+				print("##############BEGIN")
+				print(array)
+				print("##############END")
 				trasmissione = False
 				array = []
 
@@ -146,14 +150,14 @@ def logger(packet):
 			syslog.syslog(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" OFF")
 			postinstconsumption()
 		except:
-			syslog.syslog(logging.exception("logger OFF"))
+			pass
 	elif int(packet[4]) == 8:
 		try:
 			nomi[str(packet[2])]["on"] = True
 			syslog.syslog(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" ON")
 			postinstconsumption()
 		except:
-			syslog.syslog(logging.exception("logger ON"))
+			pass
 
 
 def switch():
@@ -212,3 +216,4 @@ postusageThread.start()
 
 cherrypy.server.socket_host = "0.0.0.0"
 cherrypy.quickstart(LightAPI())
+
