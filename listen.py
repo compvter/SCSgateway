@@ -53,15 +53,6 @@ def checkdouble(first,second):
 		swritequeue.put([int(second,16),0x4])
 
 
-def postinstconsumption():
-	consumption = 0
-	for i in nomi:
-		this = nomi[i]
-		if this["on"] == True:
-			consumption = consumption + this["watt"]
-	postqueue.put(consumption)
-
-
 def serialread():  #Continuous loop to read serial
 	array = []
 	trasmissione = 0
@@ -152,14 +143,22 @@ class LightAPI(object):
 		for lightid in nomi:
 			tempdict[str(lightid)] = nomi[lightid]["on"]
 		return json.dumps(tempdict,sort_keys=True)
+
+	def consumption(self):
+		consumption = 0
+		for i in nomi:
+			this = nomi[i]
+			if this["on"] == True:
+				consumption = consumption + this["watt"]
+		return consumption
 	status.exposed = True
+
 
 syslog.openlog(logoption=syslog.LOG_PID)
 
 sreadqueue		= queue.Queue()	#Queue for packets coming from the serial
 inpacketqueue	= queue.Queue()	#Queue of deduplicated packets
 swritequeue		= queue.Queue()	#Queue of commands to write
-postqueue		= queue.Queue() #Queue of power usage
 
 serialreadThread = threading.Thread(target=serialread)
 serialreadThread.start()
