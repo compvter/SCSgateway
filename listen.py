@@ -169,9 +169,6 @@ switchThread.start()
 dedupThread = threading.Thread(target=deduplicator)
 dedupThread.start()
 
-postusageThread = threading.Thread(target=postusage)
-postusageThread.start()
-
 cherrypy.server.socket_host = "0.0.0.0"
 cherrypy.quickstart(LightAPI())
 
