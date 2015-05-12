@@ -62,23 +62,6 @@ def checkdouble(first,second):
 		swritequeue.put([int(second,16),0x4])
 
 
-def overload():
-	checkdouble("11","12")
-	checkdouble("13","15")
-	checkdouble("22","21")
-	checkdouble("57","53")
-	checkdouble("54","58")
-	checkdouble("62","61")
-	checkdouble("63","64")
-	checkdouble("14","51")
-	swritequeue.put([0x23,0x4])
-	swritequeue.put([0x24,0x4])
-	swritequeue.put([0x35,0x4])
-	swritequeue.put([0x23,0x4])
-	swritequeue.put([0x56,0x4])
-	swritequeue.put([0x67,0x4])
-
-
 def postinstconsumption():
 	consumption = 0
 	for i in nomi:
@@ -170,10 +153,6 @@ class LightAPI(object):
 	def action(self,id=0,status=0):
 		answer = ""
 		swritequeue.put([int(id,16),int(status,16)])
-
-	@cherrypy.expose
-	def poweroverload(self):
-		overload()
 
 	@cherrypy.expose
 	def statushuman(self):
