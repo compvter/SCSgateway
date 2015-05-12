@@ -169,9 +169,6 @@ switchThread.start()
 dedupThread = threading.Thread(target=deduplicator)
 dedupThread.start()
 
-loggingThread = threading.Thread(target=instconsumption)
-loggingThread.start()
-
 postusageThread = threading.Thread(target=postusage)
 postusageThread.start()
 
