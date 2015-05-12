@@ -121,9 +121,6 @@ def serialread():  #Continuous loop to read serial
 					print(array)
 					sreadqueue.put(array)
 			else:	 #The packet did not terminate with A3. This is an error. Drop everything.
-				print("##############BEGIN")
-				print(array)
-				print("##############END")
 				trasmissione = False
 				array = []
 
