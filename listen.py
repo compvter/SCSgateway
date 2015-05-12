@@ -48,15 +48,6 @@ nomi = {
 ser.write("@MA".encode())
 ser.write("@l".encode())
 
-def postusage():
-	while True:
-		try:
-			wattage = postqueue.get()
-			#r = requests.get('http://172.18.0.8/emoncms/input/post.json?node=1&json={lightwatt:'+str(wattage)+'}&apikey=e8fd32598350e1568c090d283563057c', timeout=5)
-		except:
-			pass
-
-
 def checkdouble(first,second):
 	if nomi[first]["on"] & nomi[second]["on"]:
 		swritequeue.put([int(second,16),0x4])
@@ -69,11 +60,6 @@ def postinstconsumption():
 		if this["on"] == True:
 			consumption = consumption + this["watt"]
 	postqueue.put(consumption)
-
-def instconsumption():
-	while True:
-		postinstconsumption()
-		time.sleep(15)
 
 
 def serialread():  #Continuous loop to read serial
