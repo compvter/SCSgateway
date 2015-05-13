@@ -161,7 +161,6 @@ class LightAPI(object):
 			this = nomi[lightid]
 			if this["on"] == True:
 				consumption = consumption + this["watt"]/60*this["timer"]/60
-			this["timer"] = 0
 		return str(consumption)
 	status.exposed = True
 
