@@ -14,36 +14,36 @@ import syslog
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
 
 nomi = {
-"11":{"on": False, "fromweb": False, "timer":0, "watt":270, "description": "ingresso"},
-"12":{"on": False, "fromweb": False, "timer":0, "watt":216, "description": "ingresso laterale"},
-"13":{"on": False, "fromweb": False, "timer":0, "watt":162, "description": "reception"},
-"14":{"on": False, "fromweb": False, "timer":0, "watt":144, "description": "scala"},
-"15":{"on": False, "fromweb": False, "timer":0, "watt":108, "description": "corridoio pT"},
-"16":{"on": False, "fromweb": False, "timer":0, "watt":108, "description": "cabinati"},
-"17":{"on": False, "fromweb": False, "timer":0, "watt":18, "description": "antibagno pT"},
-"18":{"on": False, "fromweb": False, "timer":0, "watt":36, "description": "bagno pT"},
-"21":{"on": False, "fromweb": False, "timer":0, "watt":324, "description": "museo 1"},
-"22":{"on": False, "fromweb": False, "timer":0, "watt":324, "description": "museo 2"},
-"23":{"on": False, "fromweb": False, "timer":0, "watt":324, "description": "museo 3"},
-"24":{"on": False, "fromweb": False, "timer":0, "watt":60, "description": "sgabuzzino museo"},
-"33":{"on": False, "fromweb": False, "timer":0, "watt":270, "description": "simulatore"},
-"34":{"on": False, "fromweb": False, "timer":0, "watt":36, "description": "sottoscala"},
-"35":{"on": False, "fromweb": False, "timer":0, "watt":60, "description": "rack"},
-"51":{"on": False, "fromweb": False, "timer":0, "watt":162, "description": "corridoio p1"},
-"52":{"on": False, "fromweb": False, "timer":0, "watt":60, "description": "sgabuzzino rack"},
-"53":{"on": False, "fromweb": False, "timer":0, "watt":60, "description": "fablab 1"},
-"54":{"on": False, "fromweb": False, "timer":0, "watt":108, "description": "ufficio 1"},
-"55":{"on": False, "fromweb": False, "timer":0, "watt":60, "description": "slot car"},
-"56":{"on": False, "fromweb": False, "timer":0, "watt":54, "description": "emeroteca"},
-"57":{"on": False, "fromweb": False, "timer":0, "watt":60, "description": "fablab 2"},
-"58":{"on": False, "fromweb": False, "timer":0, "watt":270, "description": "ufficio 2"},
-"61":{"on": False, "fromweb": False, "timer":0, "watt":324, "description": "sala riunioni 2"},
-"62":{"on": False, "fromweb": False, "timer":0, "watt":324, "description": "sala riunioni 1"},
-"63":{"on": False, "fromweb": False, "timer":0, "watt":324, "description": "sala riunioni 3"},
-"64":{"on": False, "fromweb": False, "timer":0, "watt":162, "description": "sala riunioni 4"},
-"65":{"on": False, "fromweb": False, "timer":0, "watt":18, "description": "antibagno p1"},
-"66":{"on": False, "fromweb": False, "timer":0, "watt":36, "description": "bagno p1"},
-"67":{"on": False, "fromweb": False, "timer":0, "watt":60, "description": "sgabuzzino sala riunioni"}}
+"11":{"on": False, "fromweb": False, "watt":270, "description": "ingresso"},
+"12":{"on": False, "fromweb": False, "watt":216, "description": "ingresso laterale"},
+"13":{"on": False, "fromweb": False, "watt":162, "description": "reception"},
+"14":{"on": False, "fromweb": False, "watt":144, "description": "scala"},
+"15":{"on": False, "fromweb": False, "watt":108, "description": "corridoio pT"},
+"16":{"on": False, "fromweb": False, "watt":108, "description": "cabinati"},
+"17":{"on": False, "fromweb": False, "watt":18, "description": "antibagno pT"},
+"18":{"on": False, "fromweb": False, "watt":36, "description": "bagno pT"},
+"21":{"on": False, "fromweb": False, "watt":324, "description": "museo 1"},
+"22":{"on": False, "fromweb": False, "watt":324, "description": "museo 2"},
+"23":{"on": False, "fromweb": False, "watt":324, "description": "museo 3"},
+"24":{"on": False, "fromweb": False, "watt":60, "description": "sgabuzzino museo"},
+"33":{"on": False, "fromweb": False, "watt":270, "description": "simulatore"},
+"34":{"on": False, "fromweb": False, "watt":36, "description": "sottoscala"},
+"35":{"on": False, "fromweb": False, "watt":60, "description": "rack"},
+"51":{"on": False, "fromweb": False, "watt":162, "description": "corridoio p1"},
+"52":{"on": False, "fromweb": False, "watt":60, "description": "sgabuzzino rack"},
+"53":{"on": False, "fromweb": False, "watt":60, "description": "fablab 1"},
+"54":{"on": False, "fromweb": False, "watt":108, "description": "ufficio 1"},
+"55":{"on": False, "fromweb": False, "watt":60, "description": "slot car"},
+"56":{"on": False, "fromweb": False, "watt":54, "description": "emeroteca"},
+"57":{"on": False, "fromweb": False, "watt":60, "description": "fablab 2"},
+"58":{"on": False, "fromweb": False, "watt":270, "description": "ufficio 2"},
+"61":{"on": False, "fromweb": False, "watt":324, "description": "sala riunioni 2"},
+"62":{"on": False, "fromweb": False, "watt":324, "description": "sala riunioni 1"},
+"63":{"on": False, "fromweb": False, "watt":324, "description": "sala riunioni 3"},
+"64":{"on": False, "fromweb": False, "watt":162, "description": "sala riunioni 4"},
+"65":{"on": False, "fromweb": False, "watt":18, "description": "antibagno p1"},
+"66":{"on": False, "fromweb": False, "watt":36, "description": "bagno p1"},
+"67":{"on": False, "fromweb": False, "watt":60, "description": "sgabuzzino sala riunioni"}}
 
 ser.write("@MA".encode())
 ser.write("@l".encode())
@@ -104,7 +104,6 @@ def logger(packet):
 		try:
 			nomi[str(packet[2])]["on"] = False
 			nomi[str(packet[2])]["fromweb"] = False
-			nomi[str(packet[2])]["timer"] = nomi[str(packet[2])]["timer"] + 10
 			syslog.syslog(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" OFF")
 			postinstconsumption()
 		except:
@@ -112,7 +111,6 @@ def logger(packet):
 	elif int(packet[4]) == 8:
 		try:
 			nomi[str(packet[2])]["on"] = True
-			nomi[str(packet[2])]["timer"] = nomi[str(packet[2])]["timer"] + 10
 			syslog.syslog(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+" "+str(packet)+" ON")
 			postinstconsumption()
 		except:
@@ -126,13 +124,6 @@ def switch():
 			serialprint(ser,swritequeue.get())
 		if not inpacketqueue.empty():
 			logger(inpacketqueue.get())
-
-def timecounter():
-	while True:
-		for lightid in nomi:
-			if nomi[lightid]["on"] == True:
-				nomi[lightid]["timer"] = nomi[lightid]["timer"] + 1
-		time.sleep(1)
 
 class LightAPI(object):
 	@cherrypy.expose
@@ -159,10 +150,10 @@ class LightAPI(object):
 		consumption = 0
 		for lightid in nomi:
 			this = nomi[lightid]
-			consumption = consumption + this["watt"]/60*this["timer"]/60
+			if this["on"] == True:
+				consumption = consumption + this["watt"]
 		return str(consumption)
 	status.exposed = True
-
 
 syslog.openlog(logoption=syslog.LOG_PID)
 
@@ -179,8 +170,6 @@ switchThread.start()
 dedupThread = threading.Thread(target=deduplicator)
 dedupThread.start()
 
-timecounterThread = threading.Thread(target=timecounter)
-timecounterThread.start()
-
 cherrypy.server.socket_host = "0.0.0.0"
 cherrypy.quickstart(LightAPI())
+
